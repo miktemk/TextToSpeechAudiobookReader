@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeechAudiobookReader", "TextToSpeechAudiobookReader\TextToSpeechAudiobookReader.csproj", "{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miktemk", "..\MiktemkCommons\Miktemk\Miktemk.csproj", "{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miktemk.TextToSpeech", "..\MiktemkCommons\Miktemk.TextToSpeech\Miktemk.TextToSpeech.csproj", "{D07342C6-B946-4E15-876F-12A52E90EF9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miktemk.Wpf", "..\MiktemkCommons\Miktemk.Wpf\Miktemk.Wpf.csproj", "{DA6804E9-85DE-43C1-854E-6ABB3C85D970}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miktemk.TextToSpeech.Wpf", "..\MiktemkCommons\Miktemk.TextToSpeech.Wpf\Miktemk.TextToSpeech.Wpf.csproj", "{79FADD53-5510-4BE8-90ED-D050FB474605}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D07342C6-B946-4E15-876F-12A52E90EF9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D07342C6-B946-4E15-876F-12A52E90EF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D07342C6-B946-4E15-876F-12A52E90EF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D07342C6-B946-4E15-876F-12A52E90EF9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA6804E9-85DE-43C1-854E-6ABB3C85D970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA6804E9-85DE-43C1-854E-6ABB3C85D970}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA6804E9-85DE-43C1-854E-6ABB3C85D970}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA6804E9-85DE-43C1-854E-6ABB3C85D970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79FADD53-5510-4BE8-90ED-D050FB474605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79FADD53-5510-4BE8-90ED-D050FB474605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79FADD53-5510-4BE8-90ED-D050FB474605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79FADD53-5510-4BE8-90ED-D050FB474605}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
