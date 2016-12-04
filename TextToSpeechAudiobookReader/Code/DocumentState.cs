@@ -11,6 +11,14 @@ namespace TextToSpeechAudiobookReader.Code
     /// </summary>
     public class DocumentState
     {
-        public int WordPosition { get; set; }
+        public DocumentState() : this(0) { }
+        public DocumentState(int start)
+        {
+            Word = new WordHighlight(start, 0);
+        }
+
+        public WordHighlight Word { get; set; }
+        public string LangCode { get; set; }
+        public int TtsSpeed { get; set; }
     }
 }

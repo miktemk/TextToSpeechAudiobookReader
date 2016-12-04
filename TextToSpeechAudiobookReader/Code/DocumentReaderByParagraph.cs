@@ -4,18 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Miktemk.TextToSpeech.Services;
+using Miktemk.TextToSpeech.Core;
 
 namespace TextToSpeechAudiobookReader.Code
 {
     public class DocumentReaderByParagraph
     {
-        public delegate void NextParagraphHandler(string paragraph);
-        public event NextParagraphHandler NextParagraph;
+        public delegate void WordReadHandler(WordHighlight word);
+        public event WordReadHandler WordRead;
 
-        public delegate void WordInCurrentParagraphHandler(int startChar, int length);
-        public event WordInCurrentParagraphHandler WordInCurrentParagraph;
+        public delegate void OnDocumentFinishedHandler();
+        public event OnDocumentFinishedHandler OnDocumentFinished;
 
         private ITtsService ttsService;
+        private string allText;
+        private int startedReadingFromHere;
+
+        public DocumentState DocumentState { get; private set; }
 
         public DocumentReaderByParagraph(ITtsService ttsService)
         {
@@ -23,24 +28,44 @@ namespace TextToSpeechAudiobookReader.Code
             ttsService.AddWordCallback(ttsService_Word);
         }
 
-        public void SetDocument(string allText, int wordPosition)
+        public void SetDocument(string allText, DocumentState state)
         {
-            AllText = allText;
-            DocumentState = new DocumentState { WordPosition = wordPosition };
-
-            // TODO: invoke the UI updates
-            NextParagraph?.Invoke("test paragraph on SetDocument");
-            WordInCurrentParagraph?.Invoke(5, 8);
+            this.allText = allText;
+            DocumentState = state;
+            WordRead?.Invoke(state.Word);
         }
 
-        public string AllText { get; private set; }
-        public DocumentState DocumentState { get; private set; }
+        public void Play()
+        {
+            startedReadingFromHere = DocumentState.Word.StartIndex;
+            var textStartingFromHere = allText.Substring(startedReadingFromHere);
+
+            ttsService.SetVoiceOverrideSpeed(DocumentState.TtsSpeed);
+            ttsService.SayAsync(DocumentState.LangCode, textStartingFromHere, ttsService_DonePlaying);
+        }
+
+        private void ttsService_DonePlaying()
+        {
+            DocumentState.Word.StartIndex = 0;
+            OnDocumentFinished?.Invoke();
+        }
+
+        public void Stop()
+        {
+            ttsService.StopCurrentSynth();
+        }
+
+        public void Goto(int position)
+        {
+            // TODO: search up in the string to find correct position
+            DocumentState.Word.StartIndex = position;
+        }
 
         private void ttsService_Word(string text, int start, int length)
         {
-            // TODO: finish DocumentReaderByParagraph
-            //NextParagraph?.Invoke("blah");
-            //WordInCurrentParagraph?.Invoke(1, 2);
+            DocumentState.Word.StartIndex = start + startedReadingFromHere;
+            DocumentState.Word.Length = length;
+            WordRead?.Invoke(DocumentState.Word);
         }
     }
 }
