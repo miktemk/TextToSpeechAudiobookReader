@@ -43,10 +43,6 @@ namespace TextToSpeechAudiobookReader.Behaviors
                 tEdit.Select(word.StartIndex, word.Length);
                 DocumentLine line = tEdit.Document.GetLineByOffset(tEdit.CaretOffset);
                 tEdit.ScrollToLine(line.LineNumber);
-                // TODO: cleanup
-                //var highlightTransformer = new AEHighlightWord();
-                //highlightTransformer.Word = word;
-                //tEdit.TextArea.TextView.LineTransformers.Add(highlightTransformer);
             }
         }
 
