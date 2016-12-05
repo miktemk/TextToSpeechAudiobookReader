@@ -36,12 +36,44 @@ namespace TextToSpeechAudiobookReader.Code
             while (i < text.Length)
             {
                 if (text[i] == '\n' || text[i] == '\r')
-                {
-                    paraLength = i - paraStart + 1;
                     break;
-                }
                 i++;
             }
+            paraLength = i - paraStart;
+        }
+
+        public static void FindWord(string text, int position, out int paraStart, out int paraLength)
+        {
+            paraStart = 0;
+            paraLength = text.Length;
+
+            if (position < 0 || position >= text.Length)
+            {
+                paraLength = 0;
+                return;
+            }
+
+            // go back
+            var i = position;
+            while (i > 0)
+            {
+                if (char.IsWhiteSpace(text[i]))
+                {
+                    paraStart = i + 1;
+                    break;
+                }
+                i--;
+            }
+
+            // go forward
+            i = position;
+            while (i < text.Length)
+            {
+                if (char.IsWhiteSpace(text[i]))
+                    break;
+                i++;
+            }
+            paraLength = i - paraStart;
         }
     }
 }

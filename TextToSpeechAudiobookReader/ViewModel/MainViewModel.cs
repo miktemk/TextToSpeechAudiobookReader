@@ -44,7 +44,7 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
             // .... logic
             docReader = new DocumentReaderByParagraph(ttsService);
-            docReader.WordRead += DocReader_WordRead;
+            docReader.OnWordRead += DocReader_WordRead;
         }
 
         protected override void PlayPause(PlayPauseButton.PlayState state)
@@ -60,9 +60,18 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
         protected override void LoadFile(string filename)
         {
+            // .... no file was previously selected or has been deleted
+            if (filename == null || !File.Exists(filename))
+            {
+                CodeDocument.Text = "";
+                docReader.SetDocument(null, null);
+                DisEnable();
+                return;
+            }
+
+            // .... save previous document's state before closing it
             if (CurFilename != null)
             {
-                // .... save previous document's state before closing it
                 myRegistryService.SetDocumentState(CurFilename, docReader.DocumentState);
             }
 
@@ -89,6 +98,9 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
             // .... set up doc reader
             docReader.SetDocument(allText, docState);
+
+            // .... finish setting up UI
+            DisEnable();
         }
 
         #region ---------------------------- UI events  --------------------------------
@@ -102,6 +114,11 @@ namespace TextToSpeechAudiobookReader.ViewModel
         {
             docReader.Stop();
             SaveDocumentState();
+        }
+
+        protected override bool CanPlayPause(PlayPauseButton.PlayState arg)
+        {
+            return docReader.DocumentState != null;
         }
 
         private void OnSelectionChanged(int selectionStart)

@@ -10,8 +10,8 @@ namespace TextToSpeechAudiobookReader.Code
 {
     public class DocumentReaderByParagraph
     {
-        public delegate void WordReadHandler(WordHighlight word);
-        public event WordReadHandler WordRead;
+        public delegate void OnWordReadHandler(WordHighlight word);
+        public event OnWordReadHandler OnWordRead;
 
         public delegate void OnDocumentFinishedHandler();
         public event OnDocumentFinishedHandler OnDocumentFinished;
@@ -32,11 +32,15 @@ namespace TextToSpeechAudiobookReader.Code
         {
             this.allText = allText;
             DocumentState = state;
-            WordRead?.Invoke(state.Word);
+            if (DocumentState != null)
+                OnWordRead?.Invoke(state.Word);
         }
 
         public void Play()
         {
+            if (DocumentState == null)
+                return;
+
             startedReadingFromHere = DocumentState.Word.StartIndex;
             var textStartingFromHere = allText.Substring(startedReadingFromHere);
 
@@ -46,6 +50,9 @@ namespace TextToSpeechAudiobookReader.Code
 
         private void ttsService_DonePlaying()
         {
+            if (DocumentState == null)
+                return;
+
             DocumentState.Word.StartIndex = 0;
             OnDocumentFinished?.Invoke();
         }
@@ -57,15 +64,26 @@ namespace TextToSpeechAudiobookReader.Code
 
         public void Goto(int position)
         {
-            // TODO: search up in the string to find correct position
-            DocumentState.Word.StartIndex = position;
+            if (DocumentState == null)
+                return;
+
+            // search up in the string to find correct start of the double-clicked word
+            int wStart, wLength;
+            Utils.FindWord(
+                text: allText,
+                position: position,
+                paraStart: out wStart,
+                paraLength: out wLength);
+            DocumentState.Word.StartIndex = wStart;
         }
 
         private void ttsService_Word(string text, int start, int length)
         {
+            if (DocumentState == null)
+                return;
             DocumentState.Word.StartIndex = start + startedReadingFromHere;
             DocumentState.Word.Length = length;
-            WordRead?.Invoke(DocumentState.Word);
+            OnWordRead?.Invoke(DocumentState.Word);
         }
     }
 }

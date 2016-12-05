@@ -31,7 +31,7 @@ aaaaa aaaaaffds fsd dsaa sdf sd fdsaa aaaaaaa 6aaaaaaa  aaaaaa
                     paraLength: out paraLength);
 
                 var paraSubstr = text.Substring(paraStart, paraLength);
-                Assert.AreEqual(textLines[i], paraSubstr);
+                Assert.AreEqual(textLines[i].Trim(), paraSubstr);
             }
         }
 
@@ -70,6 +70,31 @@ aaaaa aaaaaffds fsd dsaa sdf sd fdsaa aaaaaaa 6aaaaaaa  aaaaaa
                 paraLength: out paraLength);
             paraSubstr = text.Substring(paraStart, paraLength);
             Assert.AreEqual(String.Empty, paraSubstr);
+        }
+
+        [TestMethod]
+        public void TestFindWord()
+        {
+            TestFindWordInHere("oooooo oooo oooo aoooxoooob oooo oooo");
+            TestFindWordInHere("oooooo oooo oooo oooooooo aoooxoooob oooooo oooo oooo");
+            TestFindWordInHere("aoooxoooob oooooo oooo oooo oooooooo oooooo oooo oooo");
+            TestFindWordInHere("oooooo oooo oooo oooooooo oooooo oooo oooo aoooxoooob");
+            TestFindWordInHere("oooooo oooo oooo oooooooo x ooooo oooo oooo", targetX: 'x', start: 'x', end: 'x');
+            TestFindWordInHere("oooooo oooo oooo oooooooo ooooo oooo oooo x", targetX: 'x', start: 'x', end: 'x');
+            TestFindWordInHere("x oooooo oooo oooo oooooooo ooooo oooo oooo", targetX: 'x', start: 'x', end: 'x');
+        }
+
+        private void TestFindWordInHere(string text, char targetX = 'x', char start = 'a', char end = 'b')
+        {
+            int wStart, wLength;
+            Utils.FindWord(
+                text: text,
+                position: text.IndexOf(targetX),
+                paraStart: out wStart,
+                paraLength: out wLength);
+            var paraSubstr = text.Substring(wStart, wLength);
+            Assert.AreEqual(wStart, text.IndexOf(start));
+            Assert.AreEqual(wStart + wLength - 1, text.IndexOf(end));
         }
     }
 }
