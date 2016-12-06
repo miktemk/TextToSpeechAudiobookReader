@@ -123,9 +123,19 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
         private void OnSelectionChanged(int selectionStart)
         {
-            docReader.Stop();
-            docReader.Goto(selectionStart);
-            docReader.Play();
+            // TODO: this is a hack (we stop playback and don't resume)
+            if (PlayButtonState == PlayPauseButton.PlayState.Playing)
+            {
+                docReader.Stop();
+                PlayButtonState = PlayPauseButton.PlayState.Idle;
+                docReader.Goto(selectionStart);
+            }
+            else
+            {
+                docReader.Goto(selectionStart);
+                docReader.Play();
+                PlayButtonState = PlayPauseButton.PlayState.Playing;
+            }
         }
 
         protected override void OnTtsSpeedChanged()

@@ -27,7 +27,8 @@
     </intr:Interaction.Triggers>
     
     <Window.InputBindings>
-        <KeyBinding Gesture="Ctrl+B" Command="{Binding PlayStopCommand}"></KeyBinding>
+        <KeyBinding Key="Space" Command="{Binding TogglePlayPauseCommand}"></KeyBinding>
+        <!--<KeyBinding Gesture="Ctrl+B" Command="{Binding TogglePlayPauseCommand}"></KeyBinding>-->
         <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFileCommand}"></KeyBinding>
         <KeyBinding Gesture="Ctrl+K" Command="{Binding ToggleSidebarCollapseCommand}"></KeyBinding>
     </Window.InputBindings>
@@ -52,7 +53,10 @@
         <DockPanel Grid.Column="2">
             <DockPanel DockPanel.Dock="Bottom">
                 <WrapPanel>
-                    <mikWpfControls:PlayPauseButton PlayPauseCommand="{Binding PlayPauseCommand}" ></mikWpfControls:PlayPauseButton>
+                    <mikWpfControls:PlayPauseButton
+                        PlayPauseCommand="{Binding PlayPauseCommand}"
+                        ButtonState="{Binding PlayButtonState}"
+                        /> 
                     <StackPanel VerticalAlignment="Center">
                         <ComboBox
                             ItemsSource="{Binding TtsSpeedChoices}"
