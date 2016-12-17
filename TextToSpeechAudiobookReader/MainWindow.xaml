@@ -8,6 +8,7 @@
         xmlns:ignore="http://www.galasoft.ch/ignore"
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:mikWpfControls="clr-namespace:Miktemk.Wpf.Controls;assembly=Miktemk.Wpf"
+        xmlns:mikTtsControls="clr-namespace:Miktemk.TextToSpeech.Wpf.Controls;assembly=Miktemk.TextToSpeech.Wpf"
         xmlns:mikWpfConverters="clr-namespace:Miktemk.Wpf.Core.Converters;assembly=Miktemk.Wpf"
         xmlns:ttsarBehaviors="clr-namespace:TextToSpeechAudiobookReader.Behaviors"
         mc:Ignorable="d ignore"
@@ -51,46 +52,8 @@
         </mikWpfControls:SublimeStyleFolders>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <DockPanel Grid.Column="2">
-            <DockPanel DockPanel.Dock="Bottom">
-                <WrapPanel>
-                    <mikWpfControls:PlayPauseButton
-                        PlayPauseCommand="{Binding PlayPauseCommand}"
-                        ButtonState="{Binding PlayButtonState}"
-                        /> 
-                    <StackPanel VerticalAlignment="Center">
-                        <ComboBox
-                            ItemsSource="{Binding TtsSpeedChoices}"
-                            SelectedItem="{Binding TtsSpeed}"
-                            Margin="10,0,0,0">
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel VerticalAlignment="Center">
-                        <ComboBox
-                            ItemsSource="{Binding LangCodeChoices}"
-                            SelectedItem="{Binding LangCode}"
-                            Margin="10,0,10,0">
-                        </ComboBox>
-                    </StackPanel>
-                </WrapPanel>
-                <!--<TextBlock
-                    DockPanel.Dock="Right"
-                    FontSize="20"
-                    VerticalAlignment="Center"
-                    Margin="0,0,10,0"
-                    Text="{Binding Path=DocPager.ProgressLabel}"
-                ></TextBlock>
-                <Slider
-                    VerticalAlignment="Center"
-                    Value="{Binding Path=DocPager.GlobalProgress, Mode=TwoWay}"
-                    Minimum="0"
-                    Maximum="{Binding Path=DocPager.TotalPages}"
-                    TickPlacement="BottomRight"
-                    TickFrequency="1"
-                    Foreground="Black"
-                    Margin="10,0,10,0"
-                ></Slider>-->
-            </DockPanel>
-            <TextBlock Text="{Binding Path=CurParagraph}"></TextBlock>
+            <mikTtsControls:TtsNavigationControls DockPanel.Dock="Bottom" DataContext="{Binding Main, Source={StaticResource Locator}}" />
+            
             <avalonEdit:TextEditor
                 Padding="10"
                 FontFamily="Arial"
@@ -100,6 +63,7 @@
                 IsReadOnly="True"
                 WordWrap="True"
                 ttsarBehaviors:AEBehaviors.HighlightWord="{Binding Highlight}"
+                ttsarBehaviors:AEBehaviors.WordSingleClicked="{Binding SelectionFirstClickCommand}"
                 ttsarBehaviors:AEBehaviors.WordDoubleClicked="{Binding SelectionChangedCommand}"
             >
             </avalonEdit:TextEditor>

@@ -103,6 +103,34 @@ namespace TextToSpeechAudiobookReader.Behaviors
 
         #endregion
 
+        #region ---------------------- WordSingleClicked ---------------------------
+
+        public static ICommand GetWordSingleClicked(DependencyObject obj)
+        {
+            return (ICommand)obj.GetValue(WordSingleClickedProperty);
+        }
+
+        public static void SetWordSingleClicked(DependencyObject obj, ICommand value)
+        {
+            obj.SetValue(WordSingleClickedProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for WordSingleClicked.  This enables animation, styling, binding, etc…
+        public static readonly DependencyProperty WordSingleClickedProperty =
+            DependencyProperty.RegisterAttached("WordSingleClicked", typeof(ICommand), typeof(AEBehaviors), new PropertyMetadata(OnWordSingleClickedChanged));
+
+        private static void OnWordSingleClickedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TextEditor tEdit = d as TextEditor;
+            ICommand command = e.NewValue as ICommand;
+            tEdit.GotMouseCapture += (object sender, MouseEventArgs args) => {
+                if (tEdit.SelectionLength == 0)
+                    command.Execute(tEdit.SelectionStart);
+            };
+        }
+
+        #endregion
+
         #region --------------------------- ScrollRow ---------------------------
 
         public static int GetScrollRow(DependencyObject obj)

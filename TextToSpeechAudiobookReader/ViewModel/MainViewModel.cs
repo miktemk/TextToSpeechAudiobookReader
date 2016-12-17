@@ -23,11 +23,13 @@ namespace TextToSpeechAudiobookReader.ViewModel
     {
         private IMyRegistryService myRegistryService;
         private DocumentReaderByParagraph docReader;
+        private int selectionStartOnFirstClick;
 
         public string CurFilename { get; private set; }
         public TextDocument CodeDocument { get; } = new TextDocument();
 
         public WordHighlight Highlight { get; private set; }
+        public ICommand SelectionFirstClickCommand { get; }
         public ICommand SelectionChangedCommand { get; }
 
         public MainViewModel(
@@ -40,11 +42,13 @@ namespace TextToSpeechAudiobookReader.ViewModel
             this.myRegistryService = registryService;
 
             // .... commands
+            SelectionFirstClickCommand = new RelayCommand<int>(OnSelectionFirstClick);
             SelectionChangedCommand = new RelayCommand<int>(OnSelectionChanged);
 
             // .... logic
             docReader = new DocumentReaderByParagraph(ttsService);
             docReader.OnWordRead += DocReader_WordRead;
+            ProgressTickFrequency = 10;
         }
 
         protected override void PlayPause(PlayPauseButton.PlayState state)
@@ -98,6 +102,7 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
             // .... set up doc reader
             docReader.SetDocument(allText, docState);
+            ProgressTotal = GetProgressValue(allText.Length);
 
             // .... finish setting up UI
             DisEnable();
@@ -121,18 +126,28 @@ namespace TextToSpeechAudiobookReader.ViewModel
             return docReader.DocumentState != null;
         }
 
+        private void OnSelectionFirstClick(int selectionStart)
+        {
+            selectionStartOnFirstClick = selectionStart;
+            Debug.WriteLine("Click1");
+        }
         private void OnSelectionChanged(int selectionStart)
         {
+            Debug.WriteLine("Click2");
             // TODO: this is a hack (we stop playback and don't resume)
             if (PlayButtonState == PlayPauseButton.PlayState.Playing)
             {
-                docReader.Stop();
                 PlayButtonState = PlayPauseButton.PlayState.Idle;
-                docReader.Goto(selectionStart);
+                ttsService.StopCurrentSynthAndCallMeWhenPlayable(() => {
+                    Debug.WriteLine("TODO: remove this comment when restart of synthh successful");
+                    docReader.Goto(selectionStartOnFirstClick);
+                    docReader.Play();
+                    PlayButtonState = PlayPauseButton.PlayState.Playing;
+                });
             }
             else
             {
-                docReader.Goto(selectionStart);
+                docReader.Goto(selectionStartOnFirstClick);
                 docReader.Play();
                 PlayButtonState = PlayPauseButton.PlayState.Playing;
             }
@@ -165,6 +180,24 @@ namespace TextToSpeechAudiobookReader.ViewModel
             }
         }
 
+        protected override void OnProgressChangedManually(double newProgress)
+        {
+            var position = GetPositionFromProgress(newProgress);
+            if (PlayButtonState == PlayPauseButton.PlayState.Playing)
+            {
+                PlayButtonState = PlayPauseButton.PlayState.Idle;
+                ttsService.StopCurrentSynthAndCallMeWhenPlayable(() => {
+                    docReader.Goto(position);
+                    docReader.Play();
+                    PlayButtonState = PlayPauseButton.PlayState.Playing;
+                });
+            }
+            else
+            {
+                docReader.Goto(position);
+            }
+        }
+
         #endregion
 
         #region ---------------------------- DocReader --------------------------------
@@ -172,6 +205,7 @@ namespace TextToSpeechAudiobookReader.ViewModel
         private void DocReader_WordRead(WordHighlight word)
         {
             Highlight = word.MakeCopy();
+            Progress = GetProgressValue(word.StartIndex);
         }
 
         #endregion
@@ -181,6 +215,15 @@ namespace TextToSpeechAudiobookReader.ViewModel
         private void SaveDocumentState()
         {
             myRegistryService.SetDocumentState(CurFilename, docReader.DocumentState);
+        }
+
+        private double GetProgressValue(int position)
+        {
+            return position / Globals.CharsPerProgressFactor;
+        }
+        private int GetPositionFromProgress(double progress)
+        {
+            return (int)(progress * Globals.CharsPerProgressFactor);
         }
 
         #endregion

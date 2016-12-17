@@ -84,17 +84,54 @@ aaaaa aaaaaffds fsd dsaa sdf sd fdsaa aaaaaaa 6aaaaaaa  aaaaaa
             TestFindWordInHere("x oooooo oooo oooo oooooooo ooooo oooo oooo", targetX: 'x', start: 'x', end: 'x');
         }
 
-        private void TestFindWordInHere(string text, char targetX = 'x', char start = 'a', char end = 'b')
+        [TestMethod]
+        public void TestFindWord_Space()
+        {
+            TestFindWordInHere("aoob oooooo oooo oooo oooooooo ooooo oooo oooo", targetX: ' ', start: 'a', end: 'b');
+            TestFindWordInHere("      aoob oooooo oooo oooo oooooooo ooooo oooo oooo", targetX: ' ', start: 'a', end: 'b');
+        }
+
+        [TestMethod]
+        public void TestFindWord_SpaceOnly()
+        {
+            TestFindWordAllSpace("            ", 0);
+            TestFindWordAllSpace("            ", 1);
+            TestFindWordAllSpace("            ", 5);
+            TestFindWordAllSpace(" ", 0);
+            TestFindWordAllSpace(" ", 100);
+        }
+
+        [TestMethod]
+        public void TestFindWord_Outside()
+        {
+            // TODO: TestFindWord outside negative
+            //TestFindWordInHere("aoooob oooo oooo oooooooo ooooo oooo aoob", positionOverride: -100);
+            TestFindWordInHere("oooooo oooo oooo oooooooo ooooo oooo aoob", positionOverride: 10000);
+        }
+
+        private void TestFindWordInHere(string text, char targetX = 'x', char start = 'a', char end = 'b', int? positionOverride = null)
         {
             int wStart, wLength;
             Utils.FindWord(
                 text: text,
-                position: text.IndexOf(targetX),
+                position: positionOverride ?? text.IndexOf(targetX),
                 paraStart: out wStart,
                 paraLength: out wLength);
             var paraSubstr = text.Substring(wStart, wLength);
             Assert.AreEqual(wStart, text.IndexOf(start));
             Assert.AreEqual(wStart + wLength - 1, text.IndexOf(end));
+        }
+
+        private void TestFindWordAllSpace(string text, int position)
+        {
+            int wStart, wLength;
+            Utils.FindWord(
+                text: text,
+                position: position,
+                paraStart: out wStart,
+                paraLength: out wLength);
+            Assert.AreEqual(wStart, -1);
+            Assert.AreEqual(wLength, 0);
         }
     }
 }

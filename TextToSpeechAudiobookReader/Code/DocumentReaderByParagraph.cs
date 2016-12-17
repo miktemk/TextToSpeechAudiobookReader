@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Miktemk.TextToSpeech.Services;
 using Miktemk.TextToSpeech.Core;
+using System.Diagnostics;
 
 namespace TextToSpeechAudiobookReader.Code
 {
@@ -74,7 +75,10 @@ namespace TextToSpeechAudiobookReader.Code
                 position: position,
                 paraStart: out wStart,
                 paraLength: out wLength);
+            var subword = allText.Substring(wStart, wLength);
             DocumentState.Word.StartIndex = wStart;
+            DocumentState.Word.Length = wLength;
+            OnWordRead?.Invoke(DocumentState.Word);
         }
 
         private void ttsService_Word(string text, int start, int length)
@@ -85,5 +89,6 @@ namespace TextToSpeechAudiobookReader.Code
             DocumentState.Word.Length = length;
             OnWordRead?.Invoke(DocumentState.Word);
         }
+
     }
 }
