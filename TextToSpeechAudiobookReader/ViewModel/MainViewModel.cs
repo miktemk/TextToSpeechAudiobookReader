@@ -129,17 +129,13 @@ namespace TextToSpeechAudiobookReader.ViewModel
         private void OnSelectionFirstClick(int selectionStart)
         {
             selectionStartOnFirstClick = selectionStart;
-            Debug.WriteLine("Click1");
         }
         private void OnSelectionChanged(int selectionStart)
         {
-            Debug.WriteLine("Click2");
-            // TODO: this is a hack (we stop playback and don't resume)
             if (PlayButtonState == PlayPauseButton.PlayState.Playing)
             {
                 PlayButtonState = PlayPauseButton.PlayState.Idle;
                 ttsService.StopCurrentSynthAndCallMeWhenPlayable(() => {
-                    Debug.WriteLine("TODO: remove this comment when restart of synthh successful");
                     docReader.Goto(selectionStartOnFirstClick);
                     docReader.Play();
                     PlayButtonState = PlayPauseButton.PlayState.Playing;
@@ -158,7 +154,6 @@ namespace TextToSpeechAudiobookReader.ViewModel
             //base.OnTtsSpeedChanged(); // NOTE: we do not wish to call base class, since we do not want to save in registry
             if (docReader != null)
             {
-                //docReader.Stop(); // On the 2nd thought... don't stop playing
                 if (docReader.DocumentState != null)
                 {
                     // set newly selected speed in document state and save in reg
