@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TextToSpeechAudiobookReader.Code;
+using Miktemk;
+using System.Linq;
 
 namespace ZTests
 {
@@ -132,6 +135,28 @@ aaaaa aaaaaffds fsd dsaa sdf sd fdsaa aaaaaaa 6aaaaaaa  aaaaaa
                 paraLength: out wLength);
             Assert.AreEqual(wStart, -1);
             Assert.AreEqual(wLength, 0);
+        }
+
+        [TestMethod]
+        public void TestFindAllLatinWords()
+        {
+            TestFindAllLatinWords_TestString("абра кадабра motherfucker, я супермен bitches хеллоу!!", new[] { "motherfucker", "bitches" });
+            TestFindAllLatinWords_TestString("абра кадабра motherfucker, я супермен bitches...", new[] { "motherfucker", "bitches" });
+            TestFindAllLatinWords_TestString("motherfucker, я супермен bitches...", new[] { "motherfucker", "bitches" });
+            TestFindAllLatinWords_TestString("motherfucker, я супермен bitches", new[] { "motherfucker", "bitches" });
+            TestFindAllLatinWords_TestString("motherfucker bitches", new[] { "motherfucker", "bitches" });
+            TestFindAllLatinWords_TestString("вываоыфлаов аволыфдаовфыашу овладф ыоалдвфы", new string[] { });
+            TestFindAllLatinWords_TestString("", new string[] { });
+        }
+
+        private void TestFindAllLatinWords_TestString(string text, string[] answers)
+        {
+            var latins = Utils.FindAllLatinWords(text).ToArray();
+            Assert.AreEqual(answers.Length, latins.Length);
+            latins.EnumerateWith(answers, (region, answer, index) => {
+                var word = text.Substring(region.StartIndex, region.Length);
+                Assert.AreEqual(answer, word);
+            });
         }
     }
 }

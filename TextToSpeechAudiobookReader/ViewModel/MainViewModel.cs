@@ -16,38 +16,60 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using System.Diagnostics;
 using Miktemk.TextToSpeech.Core;
+using TextToSpeechAudiobookReader.Code.Document;
+using System.Collections.Generic;
+using Miktemk.PropertyChanged;
+using System.Windows.Media;
 
 namespace TextToSpeechAudiobookReader.ViewModel
 {
     public class MainViewModel : MainViewModelTts
     {
         private IMyRegistryService myRegistryService;
+        private TtsDocumentFactory docFactory;
         private DocumentReaderByParagraph docReader;
         private int selectionStartOnFirstClick;
 
         public string CurFilename { get; private set; }
-        public TextDocument CodeDocument { get; } = new TextDocument();
+        public ITtsDocument CurDocument { get; private set; }
+        public bool SearchPanelVisible { get; private set; }
+        public bool SearchTextInFocus { get; private set; }
+        public string SearchText { get; set; }
 
+        // for avalon
+        public TextDocument CodeDocument { get; } = new TextDocument();
+        public IEnumerable<WordHighlight> EmphasizedWords { get; private set; }
         public WordHighlight Highlight { get; private set; }
+
         public ICommand SelectionFirstClickCommand { get; }
         public ICommand SelectionChangedCommand { get; }
+        public ICommand ShowSearchPanelCommand { get; }
+        public ICommand HideSearchPanelCommand { get; }
 
         public MainViewModel(
+            TtsDocumentFactory docFactory,
             ITtsService ttsService,
             IMyRegistryService registryService,
             IDialogService dialogService)
             : base(ttsService, registryService, dialogService)
         {
             // .... services
+            this.docFactory = docFactory;
             this.myRegistryService = registryService;
 
             // .... commands
             SelectionFirstClickCommand = new RelayCommand<int>(OnSelectionFirstClick);
             SelectionChangedCommand = new RelayCommand<int>(OnSelectionChanged);
+            ShowSearchPanelCommand = new RelayCommand(() =>
+            {
+                SearchPanelVisible = true;
+                SearchTextInFocus = true;
+            });
+            HideSearchPanelCommand = new RelayCommand(() => { SearchPanelVisible = false; });
 
             // .... logic
             docReader = new DocumentReaderByParagraph(ttsService);
-            docReader.OnWordRead += DocReader_WordRead;
+            docReader.SelectWordPlease += DocReader_WordRead;
             ProgressTickFrequency = 10;
         }
 
@@ -81,28 +103,35 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
             // .... load file and its state
             CurFilename = filename;
-            var allText = File.ReadAllText(filename);
+            var ttsDocument = docFactory.LoadFromFile(filename);
+
+            //var allText = File.ReadAllText(filename);
+            //string header;
+            //string docText;
+            //Utils.SplitTtsarHeader(allText, out header, out docText);
+
             var docState = myRegistryService.GetDocumentState(filename);
             if (docState == null)
             {
                 // .... never opened before? detect language, please
-                var qLang = UtilsTts.WhatLanguage(allText);
-                var langCode = ttsService.GetLangCodeForQLanguage(qLang);
                 docState = new DocumentState(0)
                 {
-                    LangCode = langCode,
-                    TtsSpeed = ttsService.GetDefaultSpeedForLang(langCode),
+                    LangCode = ttsDocument.Lang,
+                    TtsSpeed = ttsService.GetDefaultSpeedForLang(ttsDocument.Lang),
                 };
             }
 
-            // .... setup UI
-            CodeDocument.Text = allText;
-            TtsSpeed = docState.TtsSpeed;
-            LangCode = docState.LangCode;
-
             // .... set up doc reader
-            docReader.SetDocument(allText, docState);
-            ProgressTotal = GetProgressValue(allText.Length);
+            docReader.SetDocument(ttsDocument, docState);
+
+            // .... setup UI
+            CodeDocument.Text = ttsDocument.Text;
+            LangCode = docState.LangCode; // NOTE: lang code needs to be set before TtsSpeed because TtsSpeed will then use LangCode in case of cyrillica document
+            TtsSpeed = docState.TtsSpeed;
+            EmphasizedWords = ttsDocument.HighlightRegions;
+
+            //TODO: docReader.SetDocument(ttsDocument.MultiLangText, docState);
+            ProgressTotal = GetProgressValue(ttsDocument.Text.Length);
 
             // .... finish setting up UI
             DisEnable();
@@ -157,11 +186,10 @@ namespace TextToSpeechAudiobookReader.ViewModel
                 if (docReader.DocumentState != null)
                 {
                     // set newly selected speed in document state and save in reg
-                    docReader.DocumentState.TtsSpeed = TtsSpeed;
+                    docReader.SetTtsRate(TtsSpeed);
                     myRegistryService.SetDocumentState(CurFilename, docReader.DocumentState);
                 }
             }
-            ttsService.SetVoiceOverrideSpeed(TtsSpeed);
         }
 
         protected override void OnLangCodeChanged()
@@ -170,7 +198,7 @@ namespace TextToSpeechAudiobookReader.ViewModel
             if (docReader.DocumentState != null)
             {
                 // set newly selected language in document state and save in reg
-                docReader.DocumentState.LangCode = LangCode;
+                docReader.SetLangCode(LangCode);
                 myRegistryService.SetDocumentState(CurFilename, docReader.DocumentState);
             }
         }
@@ -195,12 +223,28 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
         #endregion
 
+        #region ---------------------------- Contextual Search --------------------------------
+
+        private void OnSearchPanelVisibleChanged()
+        {
+            if (!SearchPanelVisible)
+                docReader.ClearSearch();
+        }
+
+        private void OnSearchTextChanged()
+        {
+            docReader.SetSearchString(SearchText);
+        }
+
+        #endregion
+
         #region ---------------------------- DocReader --------------------------------
 
         private void DocReader_WordRead(WordHighlight word)
         {
-            Highlight = word.MakeCopy();
-            Progress = GetProgressValue(word.StartIndex);
+            Highlight = word?.MakeCopy();
+            if (word != null)
+                Progress = GetProgressValue(word.StartIndex);
         }
 
         #endregion

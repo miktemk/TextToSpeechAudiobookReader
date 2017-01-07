@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 using Miktemk.TextToSpeech.Services;
 using Miktemk.TextToSpeech.Core;
 using System.Diagnostics;
+using TextToSpeechAudiobookReader.Code.Document;
 
 namespace TextToSpeechAudiobookReader.Code
 {
     public class DocumentReaderByParagraph
     {
         public delegate void OnWordReadHandler(WordHighlight word);
-        public event OnWordReadHandler OnWordRead;
+        public event OnWordReadHandler SelectWordPlease;
 
         public delegate void OnDocumentFinishedHandler();
         public event OnDocumentFinishedHandler OnDocumentFinished;
 
         private ITtsService ttsService;
-        private string allText;
-        private int startedReadingFromHere;
+        //private int startedReadingFromHere;
+        private ContextualSearchState searching;
+        private ITtsDocument ttsDocument;
 
         public DocumentState DocumentState { get; private set; }
 
@@ -27,26 +29,31 @@ namespace TextToSpeechAudiobookReader.Code
         {
             this.ttsService = ttsService;
             ttsService.AddWordCallback(ttsService_Word);
+            searching = new ContextualSearchState();
         }
 
-        public void SetDocument(string allText, DocumentState state)
+        public void SetDocument(TtsDocument ttsDocument, DocumentState state)
         {
-            this.allText = allText;
+            this.ttsDocument = ttsDocument;
             DocumentState = state;
             if (DocumentState != null)
-                OnWordRead?.Invoke(state.Word);
+                SelectWordPlease?.Invoke(state.Word);
         }
 
         public void Play()
         {
             if (DocumentState == null)
                 return;
+            ttsService.SayAsyncMany(ttsDocument.MultiLangText, (phrase, id) => { },
+                startingChar: DocumentState.Word.StartIndex);
 
-            startedReadingFromHere = DocumentState.Word.StartIndex;
-            var textStartingFromHere = allText.Substring(startedReadingFromHere);
-
-            ttsService.SetVoiceOverrideSpeed(DocumentState.TtsSpeed);
-            ttsService.SayAsync(DocumentState.LangCode, textStartingFromHere, ttsService_DonePlaying);
+            //startedReadingFromHere = DocumentState.Word.StartIndex;
+            //if (ttsDocument.OneLanguage)
+            //{
+            //    ttsService.SetSpeedForLanguage(DocumentState.LangCode, DocumentState.TtsSpeed);
+            //}
+            //var textStartingFromHere = allText.Substring(startedReadingFromHere);
+            //ttsService.SayAsync(DocumentState.LangCode, textStartingFromHere, ttsService_DonePlaying);
         }
 
         private void ttsService_DonePlaying()
@@ -71,24 +78,71 @@ namespace TextToSpeechAudiobookReader.Code
             // search up in the string to find correct start of the double-clicked word
             int wStart, wLength;
             Utils.FindWord(
-                text: allText,
+                text: ttsDocument.Text,
                 position: position,
                 paraStart: out wStart,
                 paraLength: out wLength);
-            var subword = allText.Substring(wStart, wLength);
+            var subword = ttsDocument.Text.Substring(wStart, wLength);
             DocumentState.Word.StartIndex = wStart;
             DocumentState.Word.Length = wLength;
-            OnWordRead?.Invoke(DocumentState.Word);
+            SelectWordPlease?.Invoke(DocumentState.Word);
         }
 
-        private void ttsService_Word(string text, int start, int length)
+        private void ttsService_Word(string text, int offset, int start, int length)
         {
             if (DocumentState == null)
                 return;
-            DocumentState.Word.StartIndex = start + startedReadingFromHere;
+            if (!ttsService.IsPlaying)
+                return;
+            DocumentState.Word.StartIndex = offset + start; // + startedReadingFromHere;
             DocumentState.Word.Length = length;
-            OnWordRead?.Invoke(DocumentState.Word);
+            if (!searching.IsSearchInProgress)
+                SelectWordPlease?.Invoke(DocumentState.Word);
         }
 
+        public void SetSearchString(string searchText)
+        {
+            searching.IsSearchInProgress = true;
+            var index = ttsDocument.Text.IndexOf(searchText, searching.LastSearchIndex, StringComparison.InvariantCultureIgnoreCase);
+            if (index == -1)
+            {
+                SelectWordPlease?.Invoke(null);
+            }
+            else
+            {
+                //searching.LastSearchIndex = index + searchText.Length;
+                searching.SearchHighlight = new WordHighlight(index, searchText.Length);
+                SelectWordPlease?.Invoke(searching.SearchHighlight);
+            }
+        }
+
+        public void FindNext()
+        {
+
+        }
+
+        public void ClearSearch()
+        {
+            searching.IsSearchInProgress = false;
+            SelectWordPlease?.Invoke(null);
+        }
+
+        public void SetLangCode(string langCode)
+        {
+            DocumentState.LangCode = langCode;
+            ttsDocument.Lang = langCode;
+        }
+
+        public void SetTtsRate(int rate)
+        {
+            DocumentState.TtsSpeed = rate;
+            if (ttsDocument.OneLanguage)
+                ttsService.SetVoiceOverrideSpeed(rate);
+            else
+            {
+                ttsService.SetVoiceOverrideSpeed(null);
+                ttsService.SetSpeedForLanguage(DocumentState.LangCode, rate);
+            }
+        }
     }
 }

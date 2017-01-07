@@ -98,14 +98,27 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\AEBehaviors.cs" />
+    <Compile Include="Behaviors\RegionColorizer.cs" />
+    <Compile Include="Code\ContextualSearchState.cs" />
     <Compile Include="Code\DocumentState.cs" />
+    <Compile Include="Code\Document\ITtsDocument.cs" />
+    <Compile Include="Code\Document\TtsDocumentPlain.cs" />
+    <Compile Include="Code\Document\TtsDocumentCyrillica.cs" />
+    <Compile Include="Code\Document\TtsDocumentFactory.cs" />
     <Compile Include="Code\Globals.cs" />
     <Compile Include="Code\DocumentReaderByParagraph.cs" />
     <Compile Include="Code\Utils.cs" />
     <Compile Include="Code\WordHighlight.cs" />
+    <Compile Include="Controls\SearchPanel.xaml.cs">
+      <DependentUpon>SearchPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\MyRegistryService.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Page Include="Controls\SearchPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

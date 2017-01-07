@@ -4,6 +4,7 @@ using Microsoft.Practices.ServiceLocation;
 using Miktemk.TextToSpeech.Services;
 using Miktemk.Wpf.Services;
 using MvvmDialogs;
+using TextToSpeechAudiobookReader.Code.Document;
 using TextToSpeechAudiobookReader.Services;
 
 namespace TextToSpeechAudiobookReader.ViewModel
@@ -17,6 +18,7 @@ namespace TextToSpeechAudiobookReader.ViewModel
             if (!ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<MvvmDialogs.IDialogService>(() => new MvvmDialogs.DialogService());
+                SimpleIoc.Default.Register<TtsDocumentFactory, TtsDocumentFactory>();
                 SimpleIoc.Default.Register<IMyRegistryService, MyRegistryService>();
                 SimpleIoc.Default.Register<ITtsService, TtsService>();
                 SimpleIoc.Default.Register<MainViewModel>();

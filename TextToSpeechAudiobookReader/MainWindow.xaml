@@ -11,6 +11,7 @@
         xmlns:mikTtsControls="clr-namespace:Miktemk.TextToSpeech.Wpf.Controls;assembly=Miktemk.TextToSpeech.Wpf"
         xmlns:mikWpfConverters="clr-namespace:Miktemk.Wpf.Core.Converters;assembly=Miktemk.Wpf"
         xmlns:ttsarBehaviors="clr-namespace:TextToSpeechAudiobookReader.Behaviors"
+        xmlns:ttsarControls="clr-namespace:TextToSpeechAudiobookReader.Controls"
         mc:Ignorable="d ignore"
         Height="500"
         Width="900"
@@ -32,11 +33,15 @@
         <!--<KeyBinding Gesture="Ctrl+B" Command="{Binding TogglePlayPauseCommand}"></KeyBinding>-->
         <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFileCommand}"></KeyBinding>
         <KeyBinding Gesture="Ctrl+K" Command="{Binding ToggleSidebarCollapseCommand}"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+F" Command="{Binding ShowSearchPanelCommand}"></KeyBinding>
+        <KeyBinding Key="Esc" Command="{Binding HideSearchPanelCommand}"></KeyBinding>
     </Window.InputBindings>
 
     <Window.Resources>
         <mikWpfConverters:ConverterBool2Vis2 x:Key="BoolToVis2"/>
         <mikWpfConverters:ConverterBool2GridColumn x:Key="Bool2GridColumn"/>
+        <SolidColorBrush x:Key="AESelectionBrush" Color="Bisque"/>
+        <Pen x:Key="AESelectionBorder" Brush="DarkSalmon" />
     </Window.Resources>
 
     <Grid>
@@ -53,7 +58,7 @@
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <DockPanel Grid.Column="2">
             <mikTtsControls:TtsNavigationControls DockPanel.Dock="Bottom" DataContext="{Binding Main, Source={StaticResource Locator}}" />
-            
+            <ttsarControls:SearchPanel DockPanel.Dock="Top" Visibility="{Binding SearchPanelVisible, Converter={StaticResource BoolToVis2}}"/>
             <avalonEdit:TextEditor
                 Padding="10"
                 FontFamily="Arial"
@@ -65,6 +70,9 @@
                 ttsarBehaviors:AEBehaviors.HighlightWord="{Binding Highlight}"
                 ttsarBehaviors:AEBehaviors.WordSingleClicked="{Binding SelectionFirstClickCommand}"
                 ttsarBehaviors:AEBehaviors.WordDoubleClicked="{Binding SelectionChangedCommand}"
+                ttsarBehaviors:AEBehaviors.EmphasizedWords="{Binding EmphasizedWords}"
+                ttsarBehaviors:AEBehaviors.SelectionBrush="{StaticResource AESelectionBrush}"
+                ttsarBehaviors:AEBehaviors.SelectionBorder="{StaticResource AESelectionBorder}"
             >
             </avalonEdit:TextEditor>
             <!--ttsarBehaviors:AEBehaviors.ScrollRow="{Binding DocumentScrollRow, Mode=TwoWay}"

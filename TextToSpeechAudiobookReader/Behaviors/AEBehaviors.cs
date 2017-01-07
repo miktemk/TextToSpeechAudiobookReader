@@ -3,6 +3,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -35,8 +36,6 @@ namespace TextToSpeechAudiobookReader.Behaviors
         private static void OnHighlightWordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TextEditor tEdit = (TextEditor)d;
-            tEdit.TextArea.TextView.LineTransformers.Clear(); //TODO: persist old shit but faded???
-
             var word = GetHighlightWord(d);
             if (word != null)
             {
@@ -68,7 +67,8 @@ namespace TextToSpeechAudiobookReader.Behaviors
         {
             TextEditor tEdit = d as TextEditor;
             ICommand command = e.NewValue as ICommand;
-            tEdit.TextArea.SelectionChanged += (object sender, EventArgs args) => {
+            tEdit.TextArea.SelectionChanged += (object sender, EventArgs args) =>
+            {
                 // TODO: consider passing more parameters
                 command.Execute(tEdit.SelectionStart);
             };
@@ -96,7 +96,8 @@ namespace TextToSpeechAudiobookReader.Behaviors
         {
             TextEditor tEdit = d as TextEditor;
             ICommand command = e.NewValue as ICommand;
-            tEdit.TextArea.MouseDoubleClick += (object sender, MouseButtonEventArgs args) => {
+            tEdit.TextArea.MouseDoubleClick += (object sender, MouseButtonEventArgs args) =>
+            {
                 command.Execute(tEdit.SelectionStart);
             };
         }
@@ -123,7 +124,8 @@ namespace TextToSpeechAudiobookReader.Behaviors
         {
             TextEditor tEdit = d as TextEditor;
             ICommand command = e.NewValue as ICommand;
-            tEdit.GotMouseCapture += (object sender, MouseEventArgs args) => {
+            tEdit.GotMouseCapture += (object sender, MouseEventArgs args) =>
+            {
                 if (tEdit.SelectionLength == 0)
                     command.Execute(tEdit.SelectionStart);
             };
@@ -183,11 +185,90 @@ namespace TextToSpeechAudiobookReader.Behaviors
             var scrollRow = GetScrollRow(d);
 
             TextView textView = tEdit.TextArea.TextView;
-            textView.ScrollOffsetChanged += (object sender, EventArgs args) => {
+            textView.ScrollOffsetChanged += (object sender, EventArgs args) =>
+            {
                 // This is actual top visible line of current TextView ((e.g. line130) 
                 int firstLine = tEdit.TextArea.TextView.GetDocumentLineByVisualTop(tEdit.TextArea.TextView.ScrollOffset.Y).LineNumber;
                 SetScrollRow(d, firstLine);
             };
+        }
+
+        #endregion
+
+        #region ---------------------- SelectionBrush/SelectionBorder ---------------------------
+
+        public static Brush GetSelectionBrush(DependencyObject obj)
+        {
+            return (Brush)obj.GetValue(SelectionBrushProperty);
+        }
+
+        public static void SetSelectionBrush(DependencyObject obj, Brush value)
+        {
+            obj.SetValue(SelectionBrushProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for SelectionBrush.  This enables animation, styling, binding, etc…
+        public static readonly DependencyProperty SelectionBrushProperty =
+            DependencyProperty.RegisterAttached("SelectionBrush", typeof(Brush), typeof(AEBehaviors), new PropertyMetadata(OnSelectionBrushChanged));
+
+        private static void OnSelectionBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TextEditor tEdit = (TextEditor)d;
+            tEdit.TextArea.SelectionBrush = GetSelectionBrush(d);
+        }
+
+        //-----------------------------------
+
+        public static Pen GetSelectionBorder(DependencyObject obj)
+        {
+            return (Pen)obj.GetValue(SelectionBorderProperty);
+        }
+
+        public static void SetSelectionBorder(DependencyObject obj, Pen value)
+        {
+            obj.SetValue(SelectionBorderProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for SelectionBorder.  This enables animation, styling, binding, etc…
+        public static readonly DependencyProperty SelectionBorderProperty =
+            DependencyProperty.RegisterAttached("SelectionBorder", typeof(Pen), typeof(AEBehaviors), new PropertyMetadata(OnSelectionBorderChanged));
+
+        private static void OnSelectionBorderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TextEditor tEdit = (TextEditor)d;
+            tEdit.TextArea.SelectionBorder = GetSelectionBorder(d);
+        }
+
+        #endregion
+
+
+        #region ---------------------- EmphasizedWords ---------------------------
+
+        public static IEnumerable<WordHighlight> GetEmphasizedWords(DependencyObject obj)
+        {
+            return (IEnumerable<WordHighlight>)obj.GetValue(EmphasizedWordsProperty);
+        }
+
+        public static void SetEmphasizedWords(DependencyObject obj, IEnumerable<WordHighlight> value)
+        {
+            obj.SetValue(EmphasizedWordsProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for EmphasizedWords.  This enables animation, styling, binding, etc…
+        public static readonly DependencyProperty EmphasizedWordsProperty =
+            DependencyProperty.RegisterAttached("EmphasizedWords", typeof(IEnumerable<WordHighlight>), typeof(AEBehaviors), new PropertyMetadata(OnEmphasizedWordsChanged));
+
+        private static void OnEmphasizedWordsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TextEditor tEdit = (TextEditor)d;
+            tEdit.TextArea.TextView.LineTransformers.Clear();
+
+            var words = GetEmphasizedWords(d);
+            if (words != null)
+            {
+                var highlightTransformer = new RegionColorizer(words);
+                tEdit.TextArea.TextView.LineTransformers.Add(highlightTransformer);
+            }
         }
 
         #endregion
