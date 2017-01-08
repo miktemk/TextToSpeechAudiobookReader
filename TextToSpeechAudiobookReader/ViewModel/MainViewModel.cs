@@ -135,6 +135,8 @@ namespace TextToSpeechAudiobookReader.ViewModel
 
             // .... finish setting up UI
             DisEnable();
+
+            docReader.Init();
         }
 
         #region ---------------------------- UI events  --------------------------------

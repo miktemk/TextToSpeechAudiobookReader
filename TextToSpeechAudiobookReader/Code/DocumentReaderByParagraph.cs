@@ -36,8 +36,13 @@ namespace TextToSpeechAudiobookReader.Code
         {
             this.ttsDocument = ttsDocument;
             DocumentState = state;
+        }
+
+        // .... NOTE: this function is separated from SetDocument because UI needs to be updated first before we fire any selection events
+        public void Init()
+        {
             if (DocumentState != null)
-                SelectWordPlease?.Invoke(state.Word);
+                SelectWordPlease?.Invoke(DocumentState.Word);
         }
 
         public void Play()
