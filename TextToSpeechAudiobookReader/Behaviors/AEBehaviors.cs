@@ -41,8 +41,8 @@ namespace TextToSpeechAudiobookReader.Behaviors
             {
                 tEdit.Select(word.StartIndex, word.Length);
                 DocumentLine line = tEdit.Document.GetLineByOffset(tEdit.CaretOffset);
-                tEdit.TextArea.Caret.BringCaretToView();
-                //tEdit.ScrollToVerticalOffset(caretLine);
+                tEdit.ScrollToLine(line.LineNumber);     // NOTE: first scroll to line (AKA paragraph)
+                tEdit.TextArea.Caret.BringCaretToView(); // NOTE: then, if line is super long and super wrapped, make sure at least the caret is visible
             }
         }
 
