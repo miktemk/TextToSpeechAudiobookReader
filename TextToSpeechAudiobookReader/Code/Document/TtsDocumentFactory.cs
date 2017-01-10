@@ -45,7 +45,7 @@ namespace TextToSpeechAudiobookReader.Code.Document
                     var multiLangText = Utils.ParseCyrillicaText(docText, latinaLangCode);
                     return new TtsDocumentCyrillica(docText, multiLangText, latinaLangCode,
                         invert: true,
-                        highlightWordsOnly: false);
+                        highlightWordsOnly: true);
                 }
 
                 

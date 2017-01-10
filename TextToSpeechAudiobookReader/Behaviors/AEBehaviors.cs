@@ -41,7 +41,8 @@ namespace TextToSpeechAudiobookReader.Behaviors
             {
                 tEdit.Select(word.StartIndex, word.Length);
                 DocumentLine line = tEdit.Document.GetLineByOffset(tEdit.CaretOffset);
-                tEdit.ScrollToLine(line.LineNumber);
+                tEdit.TextArea.Caret.BringCaretToView();
+                //tEdit.ScrollToVerticalOffset(caretLine);
             }
         }
 
