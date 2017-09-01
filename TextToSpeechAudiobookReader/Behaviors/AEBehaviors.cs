@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using Miktemk.TextToSpeech.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
