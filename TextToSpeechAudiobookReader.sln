@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeechAudiobookReader", "TextToSpeechAudiobookReader\TextToSpeechAudiobookReader.csproj", "{A95C9B85-25D0-44D1-A101-F5D1D28F7FC4}"
 EndProject
@@ -16,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZTests", "ZTests\ZTests.csproj", "{E7299F30-0197-466D-8136-6EA2D6FAC9FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZConsoleTests", "ZConsoleTests\ZConsoleTests.csproj", "{7A4A8341-DC87-4089-8252-97BCF881BC7E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{9811B0B6-4759-495F-A65A-C62146ACC3F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miktemk.Wpf.AvalonEdit", "..\MiktemkCommons\Miktemk.Wpf.AvalonEdit\Miktemk.Wpf.AvalonEdit.csproj", "{92E324F2-C3AA-4B6F-86A3-668DC6866843}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,8 +55,19 @@ Global
 		{7A4A8341-DC87-4089-8252-97BCF881BC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A4A8341-DC87-4089-8252-97BCF881BC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A4A8341-DC87-4089-8252-97BCF881BC7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92E324F2-C3AA-4B6F-86A3-668DC6866843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92E324F2-C3AA-4B6F-86A3-668DC6866843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92E324F2-C3AA-4B6F-86A3-668DC6866843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92E324F2-C3AA-4B6F-86A3-668DC6866843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB69C87C-B374-4CD7-B0CF-FAA5541B2DF6} = {9811B0B6-4759-495F-A65A-C62146ACC3F5}
+		{D07342C6-B946-4E15-876F-12A52E90EF9B} = {9811B0B6-4759-495F-A65A-C62146ACC3F5}
+		{DA6804E9-85DE-43C1-854E-6ABB3C85D970} = {9811B0B6-4759-495F-A65A-C62146ACC3F5}
+		{79FADD53-5510-4BE8-90ED-D050FB474605} = {9811B0B6-4759-495F-A65A-C62146ACC3F5}
+		{92E324F2-C3AA-4B6F-86A3-668DC6866843} = {9811B0B6-4759-495F-A65A-C62146ACC3F5}
 	EndGlobalSection
 EndGlobal

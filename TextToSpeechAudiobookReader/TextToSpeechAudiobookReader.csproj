@@ -108,7 +108,6 @@
     <Compile Include="Code\Globals.cs" />
     <Compile Include="Code\DocumentReaderByParagraph.cs" />
     <Compile Include="Code\Utils.cs" />
-    <Compile Include="Code\WordHighlight.cs" />
     <Compile Include="Controls\SearchPanel.xaml.cs">
       <DependentUpon>SearchPanel.xaml</DependentUpon>
     </Compile>

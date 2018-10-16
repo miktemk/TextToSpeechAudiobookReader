@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using Miktemk.Models;
 using Miktemk.TextToSpeech.Core;
 using System;
 using System.Collections.Generic;
@@ -242,7 +243,6 @@ namespace TextToSpeechAudiobookReader.Behaviors
         }
 
         #endregion
-
 
         #region ---------------------- EmphasizedWords ---------------------------
 
