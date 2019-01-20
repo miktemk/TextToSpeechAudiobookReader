@@ -20,6 +20,7 @@ using TextToSpeechAudiobookReader.Code.Document;
 using System.Collections.Generic;
 using Miktemk.PropertyChanged;
 using System.Windows.Media;
+using Miktemk.Models;
 
 namespace TextToSpeechAudiobookReader.ViewModel
 {

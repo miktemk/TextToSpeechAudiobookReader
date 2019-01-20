@@ -7,6 +7,7 @@ using Miktemk.TextToSpeech.Services;
 using Miktemk.TextToSpeech.Core;
 using System.Diagnostics;
 using TextToSpeechAudiobookReader.Code.Document;
+using Miktemk.Models;
 
 namespace TextToSpeechAudiobookReader.Code
 {
